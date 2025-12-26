@@ -32,7 +32,6 @@ A ready-to-use script is available to quickly set up the secure SFTP environment
 > chmod +x Secure-Isolated-SFTP/scripts/setup_sftp.sh
 > ./Secure-Isolated-SFTP/scripts/setup_sftp.sh
 > ```
-## -------------
 ## What the script does:
 Sets up the SFTP infrastructure, not users. It automatically:
 Creates an SFTP group: sftpgroup
@@ -52,7 +51,6 @@ No port forwarding
 No XII
 No TTY
 Restarts the SSH service
-## -------------
 ## What the script does NOT do:
 For security and flexibility reasons, the script does not:
 Create system users
