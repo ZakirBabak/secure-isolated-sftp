@@ -32,36 +32,68 @@ A ready-to-use script is available to quickly set up the secure SFTP environment
 > chmod +x Secure-Isolated-SFTP/scripts/setup_sftp.sh
 > ./Secure-Isolated-SFTP/scripts/setup_sftp.sh
 > ```
-## What the script does:
-Sets up the SFTP infrastructure, not users. It automatically:
-Creates an SFTP group: sftpgroup
-Creates a secure shared directory:
-/data/shared
-Owned by root: sftpgroup
-Proper permissions and ACLs applied
-Creates a chrooted SFTP environment:
-/ sftp
-/ sftp/share
-Bind-mounts /data/ shared to / sftp/share
-Adds a persistent mount entry to /etc/fstab
-Configures sshd for SFTP-only access using internal-sftp
-Restricts users in sftpgroup :
-No SSH shell
-No port forwarding
-No XII
-No TTY
-Restarts the SSH service
 ## What the script does NOT do:
+
 For security and flexibility reasons, the script does not:
+
 Create system users
+
 Set user passwords
+
 Grant admin or full SSH access
+
 ## Required manual steps (after running the script)
+
 Create SFTP-onIy users manually:
+
 sudo useradd -m -G sftpgroup -s /usr/sbin/nologin sftpuser
+
 sudo passwd sftpuser
+
 ## Test access:
+
 sftp sftpuser@SERVER_IP
+
 ## Expected:
+
 SFTP access works
+
 SSH shell access is denied
+
+## What the script does:
+
+Sets up the SFTP infrastructure, not users. It automatically:
+
+Creates an SFTP group: sftpgroup
+
+Creates a secure shared directory:
+
+/data/shared
+
+Owned by root: sftpgroup
+
+Proper permissions and ACLs applied
+
+Creates a chrooted SFTP environment:
+
+/ sftp
+
+/ sftp/share
+
+Bind-mounts /data/ shared to / sftp/share
+
+Adds a persistent mount entry to /etc/fstab
+
+Configures sshd for SFTP-only access using internal-sftp
+
+Restricts users in sftpgroup :
+
+No SSH shell
+
+No port forwarding
+
+No XII
+
+No TTY
+
+Restarts the SSH service
