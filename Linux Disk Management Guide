@@ -1,0 +1,164 @@
+# Linux Disk Management and Partitioning Guide
+
+Disk management in Linux can be performed using graphical tools such as "GParted:apt install gparted , sudo gparted" or "KDE Partition Manager: apt install partitionmanager , sudo partitionmanager", and command-line tools such as "fdisk", "parted", and "cfdisk".
+
+This guide covers the "cfdisk" because it is simple, menu-driven, universally available, and suitable for desktops, servers, and virtual machines.
+
+## 1. List All Available Disks and Partitions : "in this guide, sdb1 is used as example and data as partition label's name":
+
+On terminal and run:
+
+```
+lsblk
+```
+Or for more details:
+
+```
+lsblk -o NAME,SIZE,TYPE
+```
+Example output:
+
+```
+sdb    20G  disk
+└─sdb1 10G  part
+```
+⚠️ Always verify the targeted disk to avoid mistakes. Using the wrong disk can "erase important data".
+
+-----
+
+## 2. Partition the Disk Using `cfdisk`
+
+Start partitioning the selected disk:
+
+```
+sudo cfdisk /dev/sdb
+
+```
+Inside `cfdisk`, follow these steps:
+
+1. Select "GPT" for the partition table type (recommended).
+2. Select "Free space", then choose "New".
+3. Enter the partition size (e.g., `10G`).
+4. Set "Type → Linux filesystem".
+5. Select "Write" and type `yes` to save changes.
+6. Finally, select "Quit".
+ 
+⚠️ Note:Until you execute "Write", no changes are applied to the disk.
+
+---
+## 3. Format the Partition
+
+After creating the partition, format it to create a filesystem:
+
+"ext4" (recommended for linux/VM):
+
+```
+sudo mkfs.ext4 /dev/sdb1
+```
+
+Or for other file systems, follow:
+
+"xfs":
+
+```
+sudo mkfs.xfs /dev/sdb1
+```
+
+"ntfs":
+
+```
+sudo mkfs.ntfs /dev/sdb1
+```
+
+"vfat/FAT32 (suitable for USB)":
+```
+sudo mkfs.vfat /dev/sdb1
+```
+
+⚠️ Warning: Formating erases all exisiting data on the Partition.
+---
+
+## 4. Add a Label to the Partition
+
+After formatting,chosing a label for the partition helps to identify it easily: here are some common ones, chose one for your case: 
+
+- "ext4":
+```
+sudo e2label /dev/sdb1 DATA10
+```
+
+- "xfs":
+```bash
+sudo xfs_admin -L DATA10 /dev/sdb1
+```
+
+- **ntfs:**
+```bash
+sudo ntfslabel /dev/sdb1 DATA10
+```
+
+- **vfat/FAT32:**
+```bash
+sudo fatlabel /dev/sdb1 DATA10
+```
+
+✅ Alternatively, you can set the label during formatting:
+
+```
+sudo mkfs.ext4 -L DATA10 /dev/sdb1
+sudo mkfs.xfs -L DATA10 /dev/sdb1
+sudo mkfs.ntfs -L DATA10 /dev/sdb1
+sudo mkfs.vfat -n DATA10 /dev/sdb1
+```
+## 5. Mount the Partition
+
+### Temporarily Mount
+
+```
+sudo mkdir /data
+sudo mount /dev/sdb1 /data
+df -h
+```
+⚠️ Note: Temporary mounts, disappear after reboot.
+
+
+### Persistent Mount
+
+1. Get the partition's UUID:
+
+```
+blkid /dev/sdb1
+```
+2. Edit `/etc/fstab` to add the partition:
+
+```
+sudo vim /etc/fstab
+```
+Add a line like this (replace `xxxx-xxxx` with the actual UUID):
+
+```
+UUID=xxxx-xxxx  /data  ext4  defaults  0  2
+```
+
+3. Test without reboot:
+
+```
+sudo mount -a
+```
+
+✅ This ensures the partition mounts automatically on boot.
+
+
+## 6. Quick Summary of Steps
+
+```
+lsblk → cfdisk → mkfs → label → mount → fstab
+```
+
+
+
+
+
+
+
+
